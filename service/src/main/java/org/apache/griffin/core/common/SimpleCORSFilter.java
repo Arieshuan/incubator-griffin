@@ -17,19 +17,12 @@ specific language governing permissions and limitations
 under the License.
 */
 package org.apache.griffin.core.common;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-//@Component
 public class SimpleCORSFilter implements Filter {
-
-// private final Logger log = LoggerFactory.getLogger(SimpleCORSFilter.class);
-//
-// public SimpleCORSFilter() {
-//    log.info("SimpleCORSFilter init");
-// }
-
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
@@ -41,10 +34,12 @@ public class SimpleCORSFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig filterConfig) {}
+    public void init(FilterConfig filterConfig) {
+    }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+    }
 
 }
 

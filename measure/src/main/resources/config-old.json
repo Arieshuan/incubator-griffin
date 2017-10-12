@@ -2,44 +2,30 @@
   "name": "accu1",
   "type": "accuracy",
 
+  "process.type": "batch",
+
   "source": {
-    "connector": {
-      "type": "hive",
-      "version": "1.2",
-      "config": {
-        "table.name": "users_info_src",
-        "partitions": "dt=20170410, hour=14"
-      }
+    "type": "hive",
+    "version": "1.2",
+    "config": {
+      "database": "default",
+      "table.name": "users_info_src",
+      "partitions": "dt=23123, hour=432; dt=35464, hour=4657"
     }
   },
 
   "target": {
-    "connector": {
-      "type": "hive",
-      "version": "1.2",
-      "config": {
-        "database": "default",
-        "table.name": "users_info_target",
-        "partitions": "dt=20170410, hour=14; dt=20170410, hour=15"
-      }
+    "type": "hive",
+    "version": "1.2",
+    "config": {
+      "database": "default",
+      "table.name": "users_info_target",
+      "partitions": "dt=23123, hour=432; dt=35464, hour=4657"
     }
   },
 
   "evaluateRule": {
-    "sampleRatio": 1,
-    "assertion": {
-      "type": "DSL-griffin",
-      "rules": [
-        {
-          "rule": "@Key ${source}['user_id'] === ${target}['user_id']"
-        },
-        {
-          "rule": "${source}['first_name'] === ${target}['first_name']; ${source}['last_name'] === ${target}['last_name']; ${source}['address'] === ${target}['address']"
-        },
-        {
-          "rule": "${source}['email'] === ${target}['email']; ${source}['phone'] === ${target}['phone']; ${source}['post_code'] === ${target}['post_code']"
-        }
-      ]
-    }
+    "sampleRatio": 0.2,
+    "rules": "$source.user_id = $target.user_id AND $source.first_name = $target.first_name AND $source.last_name = $target.last_name AND $source.address = $target.address AND $source.email = $target.email AND $source.phone = $target.phone AND $source.post_code = $target.post_code"
   }
 }
