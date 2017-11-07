@@ -32,11 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-@RequestMapping("/metrics")
+@RequestMapping("/api/v1/metrics")
 public class MetricController {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricController.class);
     @Autowired
-    MetricService metricService;
+    private MetricService metricService;
 
     @RequestMapping(value = "/org", method = RequestMethod.GET)
     public String getOrgByMeasureName(@RequestParam("measureName") String measureName) {

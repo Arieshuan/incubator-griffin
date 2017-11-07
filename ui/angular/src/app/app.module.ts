@@ -28,6 +28,8 @@ import { BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AngularEchartsModule } from 'ngx-echarts';
 // import { MdDatepickerModule, MdNativeDateModule} from '@angular/material';
 import { MatDatepickerModule, MatNativeDateModule} from '@angular/material';
+import { Location, LocationStrategy, HashLocationStrategy} from '@angular/common';
+
 
 import {ToasterModule, ToasterService} from 'angular2-toaster';
 import { FormsModule } from '@angular/forms';
@@ -46,6 +48,9 @@ import { CreateJobComponent } from './job/create-job/create-job.component';
 import { AcComponent} from './measure/create-measure/ac/ac.component';
 import { PrComponent } from './measure/create-measure/pr/pr.component';
 import { LoginComponent } from './login/login.component';
+import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
+import { RuleComponent } from './measure/create-measure/pr/rule/rule.component';
+import {TruncatePipe} from './sidebar/truncate.pipe';
 
 
 
@@ -109,8 +114,8 @@ const appRoutes: Routes = [
     component:LoginComponent
   },
   // {
-  //   path: '**',
-  //   component: AppComponent
+  //    path: '**',
+  //    component: AppComponent
   // }
 
 ];
@@ -132,6 +137,8 @@ const appRoutes: Routes = [
     AcComponent,
     PrComponent,
     LoginComponent,
+    RuleComponent,
+    TruncatePipe
   ],
   imports: [
     BrowserModule,
@@ -143,9 +150,10 @@ const appRoutes: Routes = [
     FormsModule,
     AngularEchartsModule,
     DataTableModule,
+    AngularMultiSelectModule,
     RouterModule.forRoot(
       appRoutes,
-      { enableTracing: false } // <-- debugging purposes only
+      {useHash: true},
     ),
     MatNativeDateModule,
     MatDatepickerModule

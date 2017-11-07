@@ -33,23 +33,21 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/jobs")
+@RequestMapping("/api/v1/jobs")
 public class JobController {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobController.class);
 
     @Autowired
     private JobService jobService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public List<Map<String, Serializable>> getJobs() {
         return jobService.getAliveJobs();
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public GriffinOperationMessage addJob(@RequestParam("group") String groupName,
-                                          @RequestParam("jobName") String jobName,
-                                          @RequestParam("measureId") Long measureId,
-                                          @RequestBody JobRequestBody jobRequestBody) {
+    public GriffinOperationMessage addJob(@RequestParam("group") String groupName, @RequestParam("jobName") String jobName,
+                                          @RequestParam("measureId") Long measureId, @RequestBody JobRequestBody jobRequestBody) {
         return jobService.addJob(groupName, jobName, measureId, jobRequestBody);
     }
 

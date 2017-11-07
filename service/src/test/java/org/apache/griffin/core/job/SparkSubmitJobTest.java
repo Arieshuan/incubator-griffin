@@ -23,10 +23,13 @@ import org.apache.griffin.core.job.entity.JobInstance;
 import org.apache.griffin.core.job.entity.SparkJobDO;
 import org.apache.griffin.core.job.repo.JobInstanceRepo;
 import org.apache.griffin.core.measure.repo.MeasureRepo;
-import org.apache.griffin.core.util.GriffinUtil;
+import org.apache.griffin.core.util.JsonUtil;
+import org.apache.griffin.core.util.PropertiesUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
+import org.powermock.reflect.Whitebox;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +60,7 @@ public class SparkSubmitJobTest {
 
         @Bean
         public Properties sparkJobProps() {
-            return GriffinUtil.getProperties("/sparkJob.properties");
+            return PropertiesUtil.getProperties("/sparkJob.properties");
         }
 
     }
@@ -80,19 +83,16 @@ public class SparkSubmitJobTest {
 
     @Test
     public void testExecute() throws Exception {
-        String livyUri = null;
         String result = "{\"id\":1,\"state\":\"starting\",\"appId\":null,\"appInfo\":{\"driverLogUrl\":null,\"sparkUiUrl\":null},\"log\":[]}";
         JobExecutionContext context = mock(JobExecutionContext.class);
         JobDetail jd = createJobDetail();
         given(context.getJobDetail()).willReturn(jd);
         given(measureRepo.findOne(Long.valueOf(jd.getJobDataMap().getString("measureId")))).willReturn(createATestMeasure("view_item_hourly", "ebay"));
-        given(restTemplate.postForObject(livyUri, new SparkJobDO(), String.class)).willReturn(result);
+        Whitebox.setInternalState(sparkSubmitJob,"restTemplate",restTemplate);
+        given(restTemplate.postForObject(Matchers.anyString(), Matchers.any(), Matchers.any())).willReturn(result);
         given(jobInstanceRepo.save(new JobInstance())).willReturn(new JobInstance());
         sparkSubmitJob.execute(context);
         assertTrue(true);
-
-
     }
-
 
 }

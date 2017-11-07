@@ -55,20 +55,20 @@ public class HiveMetaStoreServiceImpl implements HiveMetaStoreService {
     private ThreadPoolExecutor singleThreadExecutor;
 
     public HiveMetaStoreServiceImpl() {
-        singleThreadExecutor = new ThreadPoolExecutor(1, 1, 3, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1));
+        singleThreadExecutor = new ThreadPoolExecutor(1, 5, 3, TimeUnit.SECONDS, new ArrayBlockingQueue<>(3),new ThreadPoolExecutor.DiscardPolicy());
         LOGGER.info("HiveMetaStoreServiceImpl single thread pool created.");
     }
 
     private String getUseDbName(String dbName) {
-        if (!StringUtils.hasText(dbName))
+        if (!StringUtils.hasText(dbName)) {
             return defaultDbName;
-        else
+        } else {
             return dbName;
+        }
     }
 
     @Override
-    @Cacheable
-
+    @Cacheable(key = "#root.methodName")
     public Iterable<String> getAllDatabases() {
         Iterable<String> results = null;
         try {
@@ -82,7 +82,7 @@ public class HiveMetaStoreServiceImpl implements HiveMetaStoreService {
 
 
     @Override
-    @Cacheable
+    @Cacheable(key = "#root.methodName.concat(#dbName)")
     public Iterable<String> getAllTableNames(String dbName) {
         Iterable<String> results = null;
         try {
@@ -96,29 +96,34 @@ public class HiveMetaStoreServiceImpl implements HiveMetaStoreService {
 
 
     @Override
-    @Cacheable
+    @Cacheable(key = "#root.methodName.concat(#db)")
     public List<Table> getAllTable(String db) {
         return getTables(db);
     }
 
 
     @Override
-    @Cacheable
+    @Cacheable(key = "#root.methodName")
     public Map<String, List<Table>> getAllTable() {
         Map<String, List<Table>> results = new HashMap<>();
-        Iterable<String> dbs = getAllDatabases();
-        //MetaException happens
-        if (dbs == null)
+        Iterable<String> dbs;
+        // if hive.metastore.uris in application.properties configs wrong, client will be injected failure and will be null.
+        if (client == null) {
+            LOGGER.error("hive client is null.Please check your hive config.");
             return results;
-        for (String db : dbs) {
-            results.put(db, getTables(db));
+        }
+        dbs = getAllDatabases();
+        if (dbs != null) {
+            for (String db : dbs) {
+                results.put(db, getTables(db));
+            }
         }
         return results;
     }
 
 
     @Override
-    @Cacheable
+    @Cacheable(key = "#root.methodName.concat(#dbName).concat(#tableName)")
     public Table getTable(String dbName, String tableName) {
         Table result = null;
         try {

@@ -32,10 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class MeasureServiceImpl implements MeasureService {
@@ -53,7 +50,7 @@ public class MeasureServiceImpl implements MeasureService {
 
     @Override
     public Measure getMeasureById(@PathVariable("id") long id) {
-        return measureRepo.findOne(id);
+        return measureRepo.findByIdAndDeleted(id, false);
     }
 
     @Override
@@ -62,13 +59,13 @@ public class MeasureServiceImpl implements MeasureService {
             return GriffinOperationMessage.RESOURCE_NOT_FOUND;
         } else {
             Measure measure = measureRepo.findOne(measureId);
-            try{
+            try {
                 //pause all jobs related to the measure
                 jobService.deleteJobsRelateToMeasure(measure);
                 measure.setDeleted(true);
                 measureRepo.save(measure);
-            }catch (SchedulerException e){
-                LOGGER.error("Delete measure id: {} name: {} failure. {}", measure.getId(), measure.getName(),e.getMessage());
+            } catch (SchedulerException e) {
+                LOGGER.error("Delete measure id: {} name: {} failure. {}", measure.getId(), measure.getName(), e.getMessage());
                 return GriffinOperationMessage.DELETE_MEASURE_BY_ID_FAIL;
             }
 
@@ -81,9 +78,9 @@ public class MeasureServiceImpl implements MeasureService {
         List<Measure> aliveMeasureList = measureRepo.findByNameAndDeleted(measure.getName(), false);
         if (aliveMeasureList.size() == 0) {
             try {
-                if (measureRepo.save(measure) != null)
+                if (measureRepo.save(measure) != null) {
                     return GriffinOperationMessage.CREATE_MEASURE_SUCCESS;
-                else {
+                } else {
                     return GriffinOperationMessage.CREATE_MEASURE_FAIL;
                 }
             } catch (Exception e) {
@@ -98,19 +95,13 @@ public class MeasureServiceImpl implements MeasureService {
     }
 
     @Override
-    public List<Map<String, String>> getAllAliveMeasureNameIdByOwner(String owner) {
-        List<Map<String, String>> res = new ArrayList<>();
-        for (Measure measure : measureRepo.findByOwnerAndDeleted(owner, false)) {
-            HashMap<String, String> map = new HashMap<>();
-            map.put("name", measure.getName());
-            map.put("id", measure.getId().toString());
-            res.add(map);
-        }
-        return res;
+    public List<Measure> getAliveMeasuresByOwner(String owner) {
+        return measureRepo.findByOwnerAndDeleted(owner, false);
     }
 
+    @Override
     public GriffinOperationMessage updateMeasure(@RequestBody Measure measure) {
-        if (!measureRepo.exists(measure.getId())) {
+        if (measureRepo.findByIdAndDeleted(measure.getId(), false) == null) {
             return GriffinOperationMessage.RESOURCE_NOT_FOUND;
         } else {
             try {

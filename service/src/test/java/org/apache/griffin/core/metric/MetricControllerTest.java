@@ -19,6 +19,7 @@ under the License.
 
 package org.apache.griffin.core.metric;
 
+import org.apache.griffin.core.util.URLHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,10 +54,10 @@ public class MetricControllerTest {
     @Test
     public void testGetOrgByMeasureName() throws Exception {
         String measureName = "default";
-        String org = "ebay";
+        String org = "test";
         given(service.getOrgByMeasureName(measureName)).willReturn(org);
 
-        mvc.perform(get("/metrics/org").param("measureName", measureName))
+        mvc.perform(get(URLHelper.API_VERSION_PATH + "/metrics/org").param("measureName", measureName))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(org)));
     }

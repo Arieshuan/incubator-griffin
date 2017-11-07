@@ -22,7 +22,7 @@ under the License.
 
   <parent>
     <groupId>org.apache.griffin</groupId>
-    <artifactId>griffin-parent</artifactId>
+    <artifactId>griffin</artifactId>
     <version>0.1.6-incubating-SNAPSHOT</version>
   </parent>
 
@@ -169,6 +169,12 @@ under the License.
       <artifactId>scalamock-scalatest-support_${scala.binary.version}</artifactId>
       <version>${scalamock.version}</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>javax.mail</artifactId>
+      <version>1.4.4</version>
     </dependency>
 
   </dependencies>
